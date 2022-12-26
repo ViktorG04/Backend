@@ -1,7 +1,7 @@
-import { config } from 'dotenv';
-config();
+import app from "./app.js";
 
-import Server from "./models/server.js";
-const server = new Server();
+const port = app.get("port");
 
-server.listen();
+app.listen(port);
+
+console.log("server on port", port);
