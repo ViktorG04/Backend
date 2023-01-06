@@ -1,7 +1,17 @@
+import { typeMoney, exchanges } from "../data.js";
+
 export const getExchanges = async (req, res) => {
   try {
     //query db
-    res.status(200).json({ msg: "response data" });
+    res.status(200).json(exchanges);
+  } catch (error) {
+    return res.status(500).json({ msg: "contact the administrator" });
+  }
+};
+
+export const getTypeMoney = async (req, res) => {
+  try {
+    res.status(200).json(typeMoney);
   } catch (error) {
     return res.status(500).json({ msg: "contact the administrator" });
   }

@@ -6,11 +6,14 @@ import validateParams from "../middlewares/validateParams.js";
 import {
   createAccount,
   getAccountById,
+  getAccounts,
   pathAccount,
   updateAccount,
 } from "../controllers/accounts.controller.js";
 
 const router = Router();
+
+router.get("/accounts", getAccounts);
 
 router.get("/accounts/:id", [check("id").custom(validateIdUser)], validateParams, getAccountById);
 

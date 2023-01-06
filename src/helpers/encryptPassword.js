@@ -2,7 +2,8 @@ import bcrypt from "bcryptjs";
 import config from "../config/config.js";
 
 const passwordEncrypt = (password = "") => {
-  return bcrypt.hashSync(password, config.keyPassword);
+  const salt = config.keyPassword;
+  return bcrypt.hashSync(password, salt);
 };
 
 export default passwordEncrypt;

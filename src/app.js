@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import config from "./config/config.js";
 
+import loginRouter from "./routes/auth.router.js";
 import userRouters from "./routes/users.router.js";
 import accountRoutes from "./routes/accounts.router.js";
 import transferRoutes from "./routes/transfers.router.js";
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //Routes
+app.use(path, loginRouter);
 app.use(path, userRouters);
 app.use(path, accountRoutes);
 app.use(path, transferRoutes);

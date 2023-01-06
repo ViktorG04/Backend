@@ -15,12 +15,12 @@ export const getUserById = async (req, res) => {
 export const createNewUser = async (req, res) => {
   const { password, ...user } = req.body;
   const idState = 1;
-
   try {
     const encrypted = passwordEncrypt(password);
     const safeUser = { ...user, password: encrypted, idState };
     //insert data
-    return res.status(201).json(safeUser);
+    console.log(safeUser);
+    return res.status(201).json({ msg: "register successful" });
   } catch (error) {
     res.status(500).json({
       msg: "contact the administrator",
@@ -30,12 +30,11 @@ export const createNewUser = async (req, res) => {
 
 export const updateUserById = async (req, res) => {
   const { id } = req.params;
-  const { password } = req.body;
+  const { newPassword } = req.body;
   try {
-    const encrypted = passwordEncrypt(password);
-    const request = `user updated ${id} password: ${encrypted}`;
+    const encrypted = passwordEncrypt(newPassword);
     //update db
-    res.status(202).json(request);
+    res.status(202).json({ msg: "password updated!", newPassword });
   } catch (error) {
     res.status(500).json({
       msg: "contact the administrator",

@@ -6,13 +6,16 @@ import validationParams from "../middlewares/validateParams.js";
 import {
   getExchangeCurrency,
   getExchanges,
+  getTypeMoney,
 } from "../controllers/exchange.controller.js";
 const router = Router();
+
+router.get("/money", getTypeMoney);
 
 router.get("/currency", getExchanges);
 
 router.get(
-  "/currency/exchange",
+  "/exchange",
   [
     body("idAccountOrigin").custom(validateIdAccount),
     body("idAccountDestiny").custom(validateIdAccount),

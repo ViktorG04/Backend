@@ -1,6 +1,16 @@
 import { v4 as uuid4 } from "uuid";
 
-export const getTransfers = async (req, res) => {};
+import { transfers } from "../data.js";
+
+export const getTransfers = async (req, res) => {
+  try {
+    res.status(200).json(transfers);
+  } catch (error) {
+    res.status(500).json({
+      msg: "contact the administrator",
+    });
+  }
+};
 
 export const getTransferById = async (req, res) => {};
 
