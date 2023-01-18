@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import config from "../config/config.js";
+import { PASSWORD_KEY } from "../config/config.js";
 
 const passwordEncrypt = (password = "") => {
-  const salt = config.keyPassword;
+  const salt = PASSWORD_KEY;
   return bcrypt.hashSync(password, salt);
 };
 

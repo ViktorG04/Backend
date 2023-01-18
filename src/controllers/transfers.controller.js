@@ -1,11 +1,16 @@
-import { v4 as uuid4 } from "uuid";
-
-import { transfers } from "../data.js";
+import TypeTransfer from "../database/models/typeTransfer.js";
+import dateFormat from "../helpers/dateFormat.js";
 
 export const getTransfers = async (req, res) => {
   try {
-    res.status(200).json(transfers);
+    const query = await TypeTransfer.findAll({ attributes: [["idTypeTransfer", "id"], "name"] });
+
+    if (!query.length) {
+      return res.status(400).json({ message: "no data" });
+    }
+    res.status(200).json(query);
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       msg: "contact the administrator",
     });
@@ -38,15 +43,10 @@ export const createTransfer = async (req, res) => {
   } */
 
   //safe transfer
-
-  const transferNumber = uuid4();
-
   //format date
-  let time = new Date(date);
-  time = time.split("/").reverse().join("/");
+  let time = dateFormat(date);
 
   const transfer = {
-    transferNumber,
     date: time,
     idAccountOrigin,
     idAccountDestiny,
@@ -54,7 +54,7 @@ export const createTransfer = async (req, res) => {
     amountDestiny,
   };
 
-  return res.status(201).json(transfer);
+  res.status(201).json(transfer);
 };
 
 export const updateTransfer = async (req, res) => {};

@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
-import config from "../config/config.js";
+import { JWT_KEY } from "../config/config.js";
 
 const generatorJWT = (id = "") => {
   return new Promise((resolve, reject) => {
     const payload = { id };
     jwt.sign(
       payload,
-      config.keyJWT,
+      JWT_KEY,
       {
         expiresIn: "4h",
       },

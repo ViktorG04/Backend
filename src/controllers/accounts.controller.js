@@ -1,10 +1,51 @@
-import { accounts as data } from "../data.js";
+import Account from "../database/models/account.js";
+import TypeMoney from "../database/models/typeMoney.js";
+import { formatResponseAccount } from "../helpers/accounting.js";
+import { nameCapitalize } from "../helpers/capitalize.js";
+import dateFormat from "../helpers/dateFormat.js";
 
 export const getAccounts = async (req, res) => {
+  const { id: idAccount } = req.body;
   try {
-    const accounts = data;
-    return res.status(200).json(accounts);
+    const accounts = await Account.findAll({});
+    res.status(200).json(accounts);
   } catch (error) {
+    res.status(500).json({
+      msg: "contact the administrator",
+    });
+  }
+};
+
+export const getAllAccountsById = async (req, res) => {
+  const { id: idUser } = req.params;
+  try {
+    const query = await Account.findAll({
+      where: { idUser, state: true },
+      include: TypeMoney,
+    });
+
+    if (!query.length) {
+      return res.status(404).json({ message: "The user has no accounts" });
+    }
+
+    const Accounts = query.map((account) => {
+      const {
+        idAccount,
+        bankName,
+        numberAccount,
+        available,
+        expensive,
+        dateExpiration,
+        TypeMoney,
+      } = account;
+      const date = dateFormat(dateExpiration);
+      const money = TypeMoney.name;
+      return { idAccount, bankName, numberAccount, available, expensive, date, money };
+    });
+
+    res.status(200).json(Accounts);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({
       msg: "contact the administrator",
     });
@@ -12,17 +53,32 @@ export const getAccounts = async (req, res) => {
 };
 
 export const getAccountById = async (req, res) => {
-  const id = req.params;
-  console.log(id);
+  const { id: idAccount } = req.params;
   try {
-    //query account where IdUser
-    const accounts = data;
-    if (!accounts) {
-      return res.status(204).json({ msg: "The user has no accounts" });
+    const account = await Account.findOne({
+      where: { idAccount },
+      attributes: [
+        "bankName",
+        "numberAccount",
+        "credit",
+        "available",
+        "expensive",
+        "income",
+        "state",
+      ],
+    });
+
+    if (!account) {
+      return res.status(400).json({ message: "IdAccount is invalid" });
     }
 
-    return res.status(200).json(accounts);
+    const incomes = {};
+    const expensive = {};
+    const transfer = {};
+
+    res.status(200).json({ account, incomes, expensive, transfer });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       msg: "contact the administrator",
     });
@@ -30,40 +86,43 @@ export const getAccountById = async (req, res) => {
 };
 
 export const createAccount = async (req, res) => {
-  const { dateExpiration, ...account } = req.body;
+  const { bankName, credit, dateExpiration, idTypeMoney, idUser, numberAccount } = req.body;
 
-  const initialValues = {
-    idState: 1,
-    available: account.credit,
+  const formatName = nameCapitalize(bankName);
+  const money = parseFloat(credit);
+
+  const data = {
+    bankName: formatName,
+    numberAccount,
+    credit: money,
+    available: money,
     expensive: 0.0,
     income: 0.0,
+    dateExpiration,
+    idTypeMoney,
+    idUser,
+    state: true,
   };
   try {
-    //format date
-    const date = new Date(dateExpiration);
-
-    const safeAccount = { ...account, ...initialValues, date };
-    //insert data
-    data.push(safeAccount);
-    return res.status(201).json({ msg: "account created", account: safeAccount });
+    const query = await Account.build(data).save();
+    const account = await formatResponseAccount(query.dataValues);
+    res.status(201).json({ message: "account created", account });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       msg: "contact the administrator",
     });
   }
 };
 
-export const updateAccount = async (req, res) => {};
-
 export const pathAccount = async (req, res) => {
-  const idAccount = req.params;
-  const { idState } = req.body;
+  const { id: idAccount } = req.params;
+  const state = false;
   try {
-    //query update
-    const updateAccount = { idAccount, idState };
-
-    res.status(202).json({ msj: "Updated account status" });
+    await Account.update({ state }, { where: { idAccount } });
+    res.status(202).json({ message: "Updated account status" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       msg: "contact the administrator",
     });

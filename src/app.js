@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import config from "./config/config.js";
+import { PORT } from "./config/config.js";
 
 import loginRouter from "./routes/auth.router.js";
 import userRouters from "./routes/users.router.js";
@@ -10,12 +10,10 @@ import categoryRoutes from "./routes/categories.router.js";
 import exchangeRoutes from "./routes/exchanges.router.js";
 import expenseIncomeRoutes from "./routes/expenseIncome.router.js";
 import reportsRoutes from "./routes/reports.router.js";
-import statesRoutes from "./routes/state.router.js";
-
 const app = express();
 
 //settings
-app.set("port", config.port);
+app.set("port", PORT);
 const path = "/api";
 
 //Middleware
@@ -32,7 +30,6 @@ app.use(path, categoryRoutes);
 app.use(path, exchangeRoutes);
 app.use(path, expenseIncomeRoutes);
 app.use(path, reportsRoutes);
-app.use(path, statesRoutes);
 
 app.get("*", (req, res) => {
   res.status(404).json({ message: "Error 404 - endpoint not found" });

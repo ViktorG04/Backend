@@ -23,8 +23,8 @@ router.post(
     body("idAccountDestiny").custom(validateIdAccount),
     body("amountOrigin").not().isEmpty(),
     body("amountDestiny").not().isEmpty(),
+    validationParams,
   ],
-  validationParams,
   createTransfer
 );
 

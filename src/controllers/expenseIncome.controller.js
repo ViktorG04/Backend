@@ -1,41 +1,55 @@
+import Account from "../database/models/account.js";
+import ExpenseIncome from "../database/models/expenseIncome.js";
+import { findAccount } from "../helpers/consults.js";
+
 export const getExpenseIncome = async (req, res) => {};
 
 export const getExpenseIncomeById = async (req, res) => {};
 
 export const createExpenseOrIncome = async (req, res) => {
-  const { idAccount, idTransfer, idCategory, amount, date, description } = req.body;
-
+  const { idAccount, idTypeTransfer, idCategory, amount, date, description } = req.body;
+  const money = parseFloat(amount);
   try {
     //1 - select account by idAccount
-    let { available, expensive, income, limit } = idAccount;
+    let { available, expensive, income, limit } = await findAccount(idAccount);
 
     //2 - validate Type Transfer
-    if (idTransfer === "expense") {
-      available -= amount;
-      expensive += amount;
+    if (!available && idTypeTransfer == "2") {
+      return res.status(401).json({ message: "Cannot add more credit" });
+    }
+
+    if (idTypeTransfer == "1") {
+      available -= money;
+      expensive += money;
     } else {
-      available += amount;
-      income += amount;
+      available += money;
+      income += money;
     }
 
     //3 - validate that available doesn't exceed its limit
     if (available > limit) {
-      return "error";
+      return res.status(500).json({ message: "contact the administrator - available > limit" });
     }
 
-    //5 - update account
-    const accountUpdate = { available, expensive, income, idAccount };
+    const safeTransfer = {
+      dateReport: date,
+      amount: money,
+      description,
+      idAccount,
+      idTypeTransfer,
+      idCategory,
+    };
 
-    //6 - format date
-    let time = new Date(date);
-    time = time.split("/").reverse().join("/");
+    //4 - insert expense/income and update account
+    await Promise.all([
+      Account.update({ available, expensive, income }, { where: { idAccount } }),
+      ExpenseIncome.build(safeTransfer).save(),
+    ]);
 
-    //7 - insert expense/income
-    const safeTransfer = { idAccount, idTransfer, idCategory, date: time, amount, description };
-
-    res.status(201).json({ safeTransfer });
+    res.status(201).json({ message: "save report" });
   } catch (error) {
-    res.status(500).json({
+    console.error(error);
+    return res.status(500).json({
       msg: "contact the administrator",
     });
   }

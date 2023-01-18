@@ -73,20 +73,20 @@ export const exchanges = [
   },
   {
     id: 2,
-    Origin: "USD",
-    Destiny: "QUETZAL",
+    origin: "USD",
+    destiny: "QUETZAL",
     change: 7.88,
   },
   {
     id: 5,
-    Origin: "USD",
-    Destiny: "ARGENTINO",
+    origin: "USD",
+    destiny: "ARGENTINO",
     change: 169.5,
   },
   {
     id: 6,
-    Origin: "USD",
-    Destiny: "MEXICANO",
+    origin: "USD",
+    destiny: "MEXICANO",
     change: 19.78,
   },
 ];

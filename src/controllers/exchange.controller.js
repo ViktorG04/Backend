@@ -1,4 +1,5 @@
-import { typeMoney, exchanges } from "../data.js";
+import { exchanges } from "../data.js";
+import TypeMoney from "../database/models/typeMoney.js";
 
 export const getExchanges = async (req, res) => {
   try {
@@ -11,8 +12,14 @@ export const getExchanges = async (req, res) => {
 
 export const getTypeMoney = async (req, res) => {
   try {
-    res.status(200).json(typeMoney);
+    const requestMoney = await TypeMoney.findAll({ attributes: [["idTypeMoney", "id"], "name"] });
+    if (!requestMoney.length) {
+      return res.status(400).json({ message: "no data" });
+    }
+
+    res.status(200).json(requestMoney);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ msg: "contact the administrator" });
   }
 };
@@ -38,7 +45,7 @@ export const getExchangeCurrency = async (req, res) => {
     //exchange
     const exchange = amount * currency;
 
-    return res.status(200).json({ available, currency, exchange });
+    res.status(200).json({ available, currency, exchange });
   } catch (error) {
     return res.status(500).json({ msg: "contact the administrator" });
   }

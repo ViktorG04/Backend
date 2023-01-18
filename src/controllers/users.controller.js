@@ -1,26 +1,14 @@
+import User from "../database/models/user.js";
 import passwordEncrypt from "../helpers/encryptPassword.js";
-
-export const getUserById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    //select user by id
-    res.status(200).json(`user by id ${id}`);
-  } catch (error) {
-    res.status(500).json({
-      msg: "contact the administrator",
-    });
-  }
-};
 
 export const createNewUser = async (req, res) => {
   const { password, ...user } = req.body;
-  const idState = 1;
+  const state = true;
   try {
     const encrypted = passwordEncrypt(password);
-    const safeUser = { ...user, password: encrypted, idState };
-    //insert data
-    console.log(safeUser);
-    return res.status(201).json({ msg: "register successful" });
+    const safeUser = { state, password: encrypted, ...user };
+    await User.build(safeUser).save();
+    res.status(201).json("User registered");
   } catch (error) {
     res.status(500).json({
       msg: "contact the administrator",
@@ -29,12 +17,12 @@ export const createNewUser = async (req, res) => {
 };
 
 export const updateUserById = async (req, res) => {
-  const { id } = req.params;
+  const { id: idUser } = req.params;
   const { newPassword } = req.body;
   try {
     const encrypted = passwordEncrypt(newPassword);
-    //update db
-    res.status(202).json({ msg: "password updated!", newPassword });
+    await User.update({ password: encrypted }, { where: { idUser } });
+    res.status(202).json({ message: "password updated!", newPassword });
   } catch (error) {
     res.status(500).json({
       msg: "contact the administrator",

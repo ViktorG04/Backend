@@ -5,17 +5,27 @@ import { validateIdAccount, validateIdMoney, validateIdUser } from "../helpers/d
 import validateParams from "../middlewares/validateParams.js";
 import {
   createAccount,
+  getAllAccountsById,
   getAccountById,
   getAccounts,
   pathAccount,
-  updateAccount,
 } from "../controllers/accounts.controller.js";
 
 const router = Router();
 
-router.get("/accounts", getAccounts);
+router.get(
+  "/accounts/transfer/:id",
+  [check("id").custom(validateIdAccount), validateParams],
+  getAccounts
+);
 
-router.get("/accounts/:id", [check("id").custom(validateIdUser)], validateParams, getAccountById);
+router.get(
+  "/accounts/:id",
+  [check("id").custom(validateIdUser), validateParams],
+  getAllAccountsById
+);
+
+router.get("/accounts/info/:id", getAccountById);
 
 router.post(
   "/accounts",
@@ -26,13 +36,11 @@ router.post(
     body("idTypeMoney").custom(validateIdMoney),
     body("idUser").custom(validateIdUser),
     body("numberAccount", "Number Account is required").not().isEmpty(),
+    validateParams,
   ],
-  validateParams,
   createAccount
 );
 
-router.put("/account/:id", updateAccount);
-
-router.patch("/account/:id", [check("id").custom(validateIdAccount)], validateParams, pathAccount);
+router.patch("/accounts/:id", [check("id").custom(validateIdAccount), validateParams], pathAccount);
 
 export default router;

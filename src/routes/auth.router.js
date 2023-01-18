@@ -10,8 +10,8 @@ router.post(
   [
     body("email", "email is not validated").isEmail(),
     body("password", "Min Length is 8!").isLength({ min: 8 }),
+    validationParams,
   ],
-  validationParams,
   login
 );
 

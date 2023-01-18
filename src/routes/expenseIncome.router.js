@@ -28,8 +28,8 @@ router.post(
     body("idCategory").custom(validateIdCategory),
     body("amount", "amount is required").not().isEmpty(),
     body("date").isDate(),
+    validationParams,
   ],
-  validationParams,
   createExpenseOrIncome
 );
 
