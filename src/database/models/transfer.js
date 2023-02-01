@@ -2,28 +2,32 @@ import { DataTypes } from "sequelize";
 import { DB_SCHEMA } from "../../config/config.js";
 import database from "../connection.js";
 
-const User = database.get().define(
-  "User",
+const Transfer = database.get().define(
+  "Transfer",
   {
-    idUser: {
+    idTransfer: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING(50),
+    dateReport: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING(60),
+    amountOrigin: {
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
-    password: {
-      type: DataTypes.STRING(100),
+    amountDestiny: {
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
-    state: {
-      type: DataTypes.BOOLEAN,
+    taxes: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },
@@ -32,4 +36,4 @@ const User = database.get().define(
   }
 );
 
-export default User;
+export default Transfer;

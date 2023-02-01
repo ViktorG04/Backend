@@ -1,26 +1,29 @@
 import Jwt from "jsonwebtoken";
-import config from "../config/config.js";
+import { JWT_KEY } from "../config/config.js";
+import User from "../database/models/user.js";
 
 const validateJWT = async (req, res, next) => {
-  const token = req.header("x-token");
-
-  if (!token) {
-    res.status(401).json({ msg: "token not found" });
-  }
-
   try {
-    const payload = Jwt.verify(token, config.keyJWT);
+    const token = req.header("Authorization");
 
-    /*   //check if the user is registered
-    const {idUser} = payload;
-    const user = await findUser();
-    if(!user){
-      res.status(401).json({msg: "user not found"})
+    if (!token) {
+      res.status(401).json({ message: "token not found" });
+    }
+    const payload = Jwt.verify(token, JWT_KEY);
+
+    //check if the user is registered
+    const { id: idUser } = payload;
+    const user = await User.findByPk(idUser);
+
+    if (!user) {
+      res.status(401).json({ message: "user not found" })
     };
 
-   */
     next();
   } catch (error) {
-    res.status(401).json({ msg: "The token is invalid" });
+    console.error(error)
+    res.status(401).json({ message: "The token is invalid" });
   }
 };
+
+export default validateJWT

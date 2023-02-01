@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { DB_DATABASE } from "../../config/config.js";
+import { DB_SCHEMA } from "../../config/config.js";
 import database from "../connection.js";
 
 const TypeMoney = database.get().define(
@@ -16,7 +16,7 @@ const TypeMoney = database.get().define(
     },
   },
   {
-    schema: DB_DATABASE,
+    schema: DB_SCHEMA,
     timestamps: false,
   }
 );

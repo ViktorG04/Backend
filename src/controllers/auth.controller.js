@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
 import generatorJWT from "../helpers/generator-jwt.js";
 import User from "../database/models/user.js";
+import { ERROR_SERVER } from "../config/config.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-
   try {
     //check if the user exists by email
     const isRegistered = await User.findOne({ where: { email } });
@@ -24,7 +24,7 @@ export const login = async (req, res) => {
     const validPassword = bcrypt.compareSync(password, isRegistered.password);
     if (!validPassword) {
       return res.status(401).json({
-        msg: "Password wrong",
+        message: "Password wrong",
       });
     }
 
@@ -36,7 +36,7 @@ export const login = async (req, res) => {
     res.status(202).json({ idUser, name, email, password, token });
   } catch (error) {
     return res.status(500).json({
-      msg: "contact the administrator",
+      message: ERROR_SERVER,
     });
   }
 };

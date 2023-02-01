@@ -1,34 +1,41 @@
 import Account from "../database/models/account.js";
 import ExpenseIncome from "../database/models/expenseIncome.js";
 import { findAccount } from "../helpers/consults.js";
-
-export const getExpenseIncome = async (req, res) => {};
-
-export const getExpenseIncomeById = async (req, res) => {};
+import { ERROR_SERVER, EXPENSIVE_SELECTED, INCOME_SELECTED } from "../config/config.js";
 
 export const createExpenseOrIncome = async (req, res) => {
   const { idAccount, idTypeTransfer, idCategory, amount, date, description } = req.body;
   const money = parseFloat(amount);
   try {
     //1 - select account by idAccount
-    let { available, expensive, income, limit } = await findAccount(idAccount);
+    const { available, expensive, credit } = await findAccount(idAccount);
+    let availableFloat = parseFloat(available);
+    let expensiveFloat = parseFloat(expensive);
 
     //2 - validate Type Transfer
-    if (!available && idTypeTransfer == "2") {
+    if (!expensive && idTypeTransfer == INCOME_SELECTED) {
       return res.status(401).json({ message: "Cannot add more credit" });
     }
 
-    if (idTypeTransfer == "1") {
-      available -= money;
-      expensive += money;
-    } else {
-      available += money;
-      income += money;
+    //3 - validate the credit available to report expense
+    if (available < money && idTypeTransfer == EXPENSIVE_SELECTED) {
+      return res.status(401).json({ message: "Insufficient credit to add an expensive" });
     }
 
-    //3 - validate that available doesn't exceed its limit
-    if (available > limit) {
-      return res.status(500).json({ message: "contact the administrator - available > limit" });
+    //4 - make logic process in the account
+    if (idTypeTransfer == EXPENSIVE_SELECTED) {
+      availableFloat -= money;
+      expensiveFloat += money;
+    } else {
+      availableFloat += money;
+      expensiveFloat -= money;
+    }
+
+    //5 - validate that available doesn't exceed its limit
+    const total = Math.abs(availableFloat) + Math.abs(expensiveFloat);
+    const totalFixed = +total.toFixed(2);
+    if (totalFixed > credit) {
+      return res.status(401).json({ message: `No more credit can be added to the designated limit: ${credit}` });
     }
 
     const safeTransfer = {
@@ -40,17 +47,17 @@ export const createExpenseOrIncome = async (req, res) => {
       idCategory,
     };
 
-    //4 - insert expense/income and update account
+    //6 - insert expense/income and update account
     await Promise.all([
-      Account.update({ available, expensive, income }, { where: { idAccount } }),
+      Account.update({ "available": availableFloat, "expensive": expensiveFloat }, { where: { idAccount } }),
       ExpenseIncome.build(safeTransfer).save(),
     ]);
 
     res.status(201).json({ message: "save report" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      msg: "contact the administrator",
+    console.log(error)
+    res.status(500).json({
+      message: ERROR_SERVER,
     });
   }
 };

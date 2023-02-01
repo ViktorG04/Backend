@@ -1,17 +1,19 @@
+import { ERROR_SERVER } from "../config/config.js";
+import { passwordEncrypt } from "../helpers/utils.js";
 import User from "../database/models/user.js";
-import passwordEncrypt from "../helpers/encryptPassword.js";
+
 
 export const createNewUser = async (req, res) => {
   const { password, ...user } = req.body;
-  const state = true;
+  const STATE = true;
   try {
     const encrypted = passwordEncrypt(password);
-    const safeUser = { state, password: encrypted, ...user };
+    const safeUser = { "state": STATE, password: encrypted, ...user };
     await User.build(safeUser).save();
     res.status(201).json("User registered");
   } catch (error) {
     res.status(500).json({
-      msg: "contact the administrator",
+      message: ERROR_SERVER,
     });
   }
 };
@@ -25,7 +27,7 @@ export const updateUserById = async (req, res) => {
     res.status(202).json({ message: "password updated!", newPassword });
   } catch (error) {
     res.status(500).json({
-      msg: "contact the administrator",
+      message: ERROR_SERVER,
     });
   }
 };

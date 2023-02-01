@@ -1,3 +1,4 @@
+import { ERROR_SERVER } from "../config/config.js";
 import Categories from "../database/models/categories.js";
 
 export const getCategories = async (req, res) => {
@@ -6,10 +7,8 @@ export const getCategories = async (req, res) => {
     if (!query.length) {
       return res.status(400).json({ message: "no data" });
     }
-
     res.status(200).json(query);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "contact the administrator" });
+    return res.status(500).json({ message: ERROR_SERVER });
   }
 };

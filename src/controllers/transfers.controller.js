@@ -1,5 +1,8 @@
 import TypeTransfer from "../database/models/typeTransfer.js";
-import dateFormat from "../helpers/dateFormat.js";
+import Account from "../database/models/account.js";
+import Transfer from "../database/models/transfer.js";
+import { ERROR_SERVER } from "../config/config.js";
+import { Accounting } from "../helpers/accounting.js";
 
 export const getTransfers = async (req, res) => {
   try {
@@ -10,51 +13,48 @@ export const getTransfers = async (req, res) => {
     }
     res.status(200).json(query);
   } catch (error) {
-    console.log(error);
     res.status(500).json({
-      msg: "contact the administrator",
+      message: ERROR_SERVER
     });
   }
 };
 
-export const getTransferById = async (req, res) => {};
-
 export const createTransfer = async (req, res) => {
-  const { date, idAccountOrigin, idAccountDestiny, amountOrigin, amountDestiny } = req.body;
+  const { date, idAccountOrigin, idAccountDestiny, amountOrigin, amountDestiny, taxes, description } = req.body;
+  try {
 
-  //query account Origin
-  /*  let {available, expensive, limit} = idAccountOrigin;
+    //1 account Origin
+    const { availableFloat: availableOrigin, expensiveFloat: expensiveOrigin } = await Accounting(idAccountOrigin, amountOrigin, true);
 
- available - amountOrigin;
- expensive + amountOrigin;
+    //2 account Destiny
+    const { availableFloat: availableDestiny, expensiveFloat: expenseDestiny } = await Accounting(idAccountDestiny, amountDestiny, false);
 
- if(available > limit){
-  return 'error';
- } */
+    //3 - insert transfer and update accounts
+    const transfer = {
+      dateReport: date,
+      amountOrigin,
+      amountDestiny,
+      idAccountOrigin,
+      idAccountDestiny,
+      taxes,
+      description,
+    };
 
-  //query account beneficiary
-  /*  let { available, income, limit } = idAccountDestiny;
+    await Promise.all([
+      Transfer.build(transfer).save(),
+      Account.update({ "available": availableOrigin, "expensive": expensiveOrigin }, { where: { "idAccount": idAccountOrigin } }),
+      Account.update({ "available": availableDestiny, "expensive": expenseDestiny }, { where: { "idAccount": idAccountDestiny } }),
+    ])
 
-  available + amountDestiny;
-  income + amountDestiny;
+    res.status(201).json({ message: "successful transfer" });
+  } catch (error) {
 
-  if (available > limit) {
-    return "error";
-  } */
+    if ((typeof error) === "string") {
+      return res.status(400).json({ message: error });
+    };
 
-  //safe transfer
-  //format date
-  let time = dateFormat(date);
-
-  const transfer = {
-    date: time,
-    idAccountOrigin,
-    idAccountDestiny,
-    amountOrigin,
-    amountDestiny,
-  };
-
-  res.status(201).json(transfer);
+    res.status(500).json({
+      message: ERROR_SERVER
+    });
+  }
 };
-
-export const updateTransfer = async (req, res) => {};

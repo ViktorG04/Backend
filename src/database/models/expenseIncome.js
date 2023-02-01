@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { DB_DATABASE } from "../../config/config.js";
+import { DB_SCHEMA } from "../../config/config.js";
 import database from "../connection.js";
 
 const ExpenseIncome = database.get().define(
@@ -15,7 +15,7 @@ const ExpenseIncome = database.get().define(
       allowNull: false,
     },
     amount: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.FLOAT(4),
       allowNull: false,
     },
     description: {
@@ -24,7 +24,7 @@ const ExpenseIncome = database.get().define(
     },
   },
   {
-    schema: DB_DATABASE,
+    schema: DB_SCHEMA,
   }
 );
 

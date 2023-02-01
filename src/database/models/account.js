@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { DB_DATABASE } from "../../config/config.js";
+import { DB_SCHEMA } from "../../config/config.js";
 import database from "../connection.js";
 
 const Account = database.get().define(
@@ -19,19 +19,15 @@ const Account = database.get().define(
       allowNull: false,
     },
     credit: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.FLOAT(4),
       allowNull: false,
     },
     available: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.FLOAT(4),
       allowNull: false,
     },
     expensive: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    income: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.FLOAT(4),
       allowNull: false,
     },
     dateExpiration: {
@@ -44,7 +40,7 @@ const Account = database.get().define(
     },
   },
   {
-    schema: DB_DATABASE,
+    schema: DB_SCHEMA,
   }
 );
 

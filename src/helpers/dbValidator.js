@@ -2,10 +2,11 @@ import User from "../database/models/user.js";
 import Account from "../database/models/account.js";
 import TypeMoney from "../database/models/typeMoney.js";
 import Categories from "../database/models/categories.js";
+import TypeTransfer from "../database/models/typeTransfer.js";
 
 //validate id user
 export const validateIdUser = async (idUser = "") => {
-  const userData = await User.findOne({ where: { idUser } });
+  const userData = await User.findByPk(idUser);
   if (!userData) {
     throw new Error(`User don't registered ${idUser}`);
   }
@@ -21,15 +22,15 @@ export const emailIsRegister = async (email = "") => {
 
 //validate TypeMoney
 export const validateIdMoney = async (idTypeMoney = "") => {
-  const isValidateMoney = await TypeMoney.findOne({ where: { idTypeMoney } });
+  const isValidateMoney = await TypeMoney.findByPk(idTypeMoney);
   if (!isValidateMoney) {
     throw new Error(`TypeMoney is invalid`);
   }
 };
 
-//validate TypeMoney
+//validate TypeCategory
 export const validateIdCategory = async (idCategory = "") => {
-  const isCategory = await Categories.findOne({ where: { idCategory } });
+  const isCategory = await Categories.findByPk(idCategory);
   if (!isCategory) {
     throw new Error(`Category is invalid`);
   }
@@ -37,13 +38,16 @@ export const validateIdCategory = async (idCategory = "") => {
 
 //validate account
 export const validateIdAccount = async (idAccount = "") => {
-  const isAccount = await Account.findOne({ where: { idAccount } });
+  const isAccount = await Account.findByPk(idAccount);
   if (!isAccount) {
     throw new Error(`IdAccount is invalid`);
   }
 };
 
 //validate TypeTransfer
-export const validateIdTypeTransfer = async (id = "") => {
-  console.log("middle type transfer", id);
+export const validateIdTypeTransfer = async (idTypeTransfer = "") => {
+  const isTransfer = await TypeTransfer.findByPk(idTypeTransfer);
+  if (!isTransfer) {
+    throw new Error(`TypeTransfer is invalid`);
+  }
 };

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { check, body } from "express-validator";
-
-import validationParams from "../middlewares/validateParams.js";
 import { emailIsRegister, validateIdUser } from "../helpers/dbValidator.js";
 import { createNewUser, updateUserById } from "../controllers/users.controller.js";
+import validateJWT from "../middlewares/validate-jwt.js";
+import validationParams from "../middlewares/validateParams.js";
 
 const router = Router();
 
@@ -22,6 +22,7 @@ router.post(
 router.put(
   "/user/:id",
   [
+    validateJWT,
     check("id").custom(validateIdUser),
     body("newPassword", "min length 8").isLength({ min: 8 }),
     validationParams,
