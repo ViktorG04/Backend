@@ -2,7 +2,11 @@ import { Op } from "sequelize";
 import { ERROR_SERVER, EXPENSIVE_SELECTED, INCOME_SELECTED, CATEGORY } from "../config/config.js";
 import { formatResponseAccount } from "../helpers/accounting.js";
 import { nameCapitalize, dateFormat, total } from "../helpers/utils.js";
-import { findAccount, findExpenseIncome, findMadeTransfers, findReceivedTransfers } from "../helpers/consults.js";
+import {
+  findExpenseIncome,
+  findMadeTransfers,
+  findReceivedTransfers,
+} from "../helpers/consults.js";
 import Account from "../database/models/account.js";
 import TypeMoney from "../database/models/typeMoney.js";
 
@@ -22,7 +26,7 @@ export const getAccounts = async (req, res) => {
 
     res.status(200).json(accounts);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       message: ERROR_SERVER,
     });
@@ -58,7 +62,16 @@ export const getAllAccountsById = async (req, res) => {
       const expensiveFixed = +expensive.toFixed(2);
       const creditFixed = +credit.toFixed(2);
 
-      return { idAccount, bankName, numberAccount, "available": availableFixed, "expensive": expensiveFixed, "credit": creditFixed, date, money };
+      return {
+        idAccount,
+        bankName,
+        numberAccount,
+        available: availableFixed,
+        expensive: expensiveFixed,
+        credit: creditFixed,
+        date,
+        money,
+      };
     });
 
     res.status(200).json(Accounts);
@@ -73,7 +86,6 @@ export const getAccountById = async (req, res) => {
   const { idAccount } = req.params;
 
   try {
-
     const [expensive, incomes, transferReceived, madeTransfers] = await Promise.all([
       findExpenseIncome(idAccount, EXPENSIVE_SELECTED),
       findExpenseIncome(idAccount, INCOME_SELECTED),
@@ -85,18 +97,17 @@ export const getAccountById = async (req, res) => {
     const totalIncomes = total([...incomes, ...transferReceived]);
 
     const debitTransfers = madeTransfers.map((transfer) => {
-      const { date, amountDestiny, description } = transfer;
-      return { date, "amount": amountDestiny, "category": CATEGORY, description };
+      const { date, amount, description } = transfer;
+      return { date, amount, category: CATEGORY, description };
     });
 
     const creditsTransfers = transferReceived.map((transfer) => {
       const { date, amount, description } = transfer;
-      return { date, amount, "category": CATEGORY, description };
+      return { date, amount, category: CATEGORY, description };
     });
 
-
-    const allIncomes = +(totalIncomes).toFixed(2);
-    const allExpensive = +(totalExpensive).toFixed(2);
+    const allIncomes = +totalIncomes.toFixed(2);
+    const allExpensive = +totalExpensive.toFixed(2);
 
     const debits = [...expensive, ...debitTransfers];
 
@@ -133,23 +144,23 @@ export const createAccount = async (req, res) => {
     const account = await formatResponseAccount(query.dataValues);
     res.status(201).json({ message: "account created", account });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       message: ERROR_SERVER,
     });
-  };
+  }
 };
 
 export const pathAccount = async (req, res) => {
   const { idAccount } = req.params;
   const STATE = false;
   try {
-    await Account.update({ "state": STATE }, { where: { idAccount } });
+    await Account.update({ state: STATE }, { where: { idAccount } });
     res.status(202).json({ message: "Account Deleted", idAccount });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       message: ERROR_SERVER,
     });
-  };
+  }
 };

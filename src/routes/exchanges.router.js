@@ -19,10 +19,11 @@ router.post(
   "/exchange",
   [
     validateJWT,
-    body("idAccountOrigin").custom(validateIdAccount),
-    body("idAccountDestiny").custom(validateIdAccount),
+    body("to", "to is required").not().isEmpty(),
+    body("from").not().isEmpty(),
+    body("amount").not().isEmpty(),
+    validationParams,
   ],
-  validationParams,
   getExchangeCurrency
 );
 export default router;
