@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { PORT } from "./config/config.js";
-
 import loginRouter from "./routes/auth.router.js";
 import userRouters from "./routes/users.router.js";
 import accountRoutes from "./routes/accounts.router.js";
