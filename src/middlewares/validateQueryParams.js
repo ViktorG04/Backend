@@ -1,5 +1,4 @@
-const validateQueryParams = (req, res, next) => {
-
+const validateQueryParams = (req, _, next) => {
   const { idAccount, idCategory, date } = req.body;
 
   let query = {};
@@ -17,19 +16,17 @@ const validateQueryParams = (req, res, next) => {
 
     if (!idAccount && !idCategory) {
       query = { dateReport };
-    }
-    else if (idAccount && !idCategory) {
+    } else if (idAccount && !idCategory) {
       query = { idAccount, dateReport };
     } else if (idCategory && !idAccount) {
-      query = { idCategory, dateReport }
+      query = { idCategory, dateReport };
     } else {
-      query = { idAccount, idCategory, dateReport }
+      query = { idAccount, idCategory, dateReport };
     }
   }
 
   req.where = query;
   next();
-
 };
 
 export default validateQueryParams;

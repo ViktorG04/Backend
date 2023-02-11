@@ -2,16 +2,16 @@ import { ERROR_SERVER } from "../config/config.js";
 import { passwordEncrypt } from "../helpers/utils.js";
 import User from "../database/models/user.js";
 
-
 export const createNewUser = async (req, res) => {
   const { password, ...user } = req.body;
   const STATE = true;
   try {
     const encrypted = passwordEncrypt(password);
-    const safeUser = { "state": STATE, password: encrypted, ...user };
+    const safeUser = { state: STATE, password: encrypted, ...user };
     await User.build(safeUser).save();
     res.status(201).json("User registered");
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: ERROR_SERVER,
     });

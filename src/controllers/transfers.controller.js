@@ -29,7 +29,9 @@ export const createTransfer = async (req, res) => {
     taxes,
     description,
   } = req.body;
+
   const taxesFloat = parseFloat(taxes);
+
   try {
     //1 account Origin
     const { availableFloat: availableOrigin, expensiveFloat: expensiveOrigin } = await Accounting(

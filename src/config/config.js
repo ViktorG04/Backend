@@ -14,5 +14,4 @@ export const KEY_FIXER = process.env.KEY_FIXER || "";
 export const API_FIXER = process.env.API_FIXER || "";
 export const EXPENSIVE_SELECTED = "1";
 export const INCOME_SELECTED = "2";
-export const CATEGORY = "Transfer";
 export const ERROR_SERVER = "contact the administrator";

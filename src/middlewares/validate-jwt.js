@@ -19,6 +19,7 @@ const validateJWT = async (req, res, next) => {
       return res.status(401).json({ message: "user not found" });
     }
 
+    req.user = user;
     next();
   } catch (error) {
     console.error(error);

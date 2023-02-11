@@ -1,7 +1,6 @@
 import TypeMoney from "../database/models/typeMoney.js";
 import { consultExchange, getLatestExchange } from "../helpers/fixerConnection.js";
 import { ERROR_SERVER } from "../config/config.js";
-import { exchanges } from "../data.js";
 
 export const getExchangeCurrency = async (req, res) => {
   const { to, from, amount } = req.body;
@@ -20,6 +19,12 @@ export const getExchangeCurrency = async (req, res) => {
 };
 
 export const getExchanges = async (req, res) => {
+  const exchanges = [
+    { origin: "USD", destiny: "ARS", change: 185.308964 },
+    { origin: "USD", destiny: "EUR", change: 0.917902 },
+    { origin: "USD", destiny: "GTQ", change: 7.853713 },
+    { origin: "USD", destiny: "MXN", change: 18.797385 },
+  ];
   try {
     /*  const rates = await getLatestExchange();
     const exchanges = [];

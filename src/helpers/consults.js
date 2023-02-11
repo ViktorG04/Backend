@@ -6,22 +6,22 @@ import Categories from "../database/models/categories.js";
 import ExpenseIncome from "../database/models/expenseIncome.js";
 import Transfer from "../database/models/transfer.js";
 
-export const findMoney = async (idTypeMoney) => {
+export const findMoney = async (idTypeMoney = "") => {
   const typeMoney = await TypeMoney.findByPk(idTypeMoney);
   return typeMoney.dataValues.name;
 };
 
-export const findTypeTransfer = async (idTypeTransfer) => {
+export const findTypeTransfer = async (idTypeTransfer = "") => {
   const typeTransfer = await TypeTransfer.findByPk(idTypeTransfer);
   return typeTransfer.dataValues.name;
 };
 
-export const findCategories = async (idCategory) => {
+export const findCategories = async (idCategory = "") => {
   const category = await Categories.findOne({ where: { idCategory } });
   return category.dataValues.name;
 };
 
-export const findAccount = async (idAccount) => {
+export const findAccount = async (idAccount = "") => {
   const account = await Account.findOne({ where: { idAccount }, include: TypeMoney });
 
   const { bankName, numberAccount, credit, available, expensive, state, ...data } =
@@ -43,19 +43,20 @@ export const findAccount = async (idAccount) => {
 
 export const findExpenseIncome = async (idAccount = "", idTypeTransfer = "") => {
   const query = await ExpenseIncome.findAll({
+    attributes: ["dateReport", "amount", "description"],
     where: { idAccount, idTypeTransfer },
-    attributes: ["dateReport", "amount", "description", "idCategory"],
+    include: [{ model: Categories, as: "Category" }],
   });
 
-  const reports = query.map(async (report) => {
-    const { dateReport, amount, description, idCategory } = report.dataValues;
+  const reports = query.map((report) => {
+    const { dateReport, amount, description, Category } = report.dataValues;
     const date = dateFormat(dateReport);
     const amountFixed = +amount.toFixed(2);
-    const category = await findCategories(idCategory);
+    const category = Category.name;
     return { date, amount: amountFixed, category, description };
   });
-  const promise = Promise.all(reports);
-  return promise;
+
+  return reports;
 };
 
 export const findReceivedTransfers = async (idAccount = "") => {

@@ -24,6 +24,20 @@ export const dateFormat = (date = "") => {
 };
 
 export const total = (arr) => {
-  const total = arr.reduce((acc, item) => { return acc += item.amount }, 0);
+  const total = arr.reduce((acc, item) => {
+    return (acc += item.amount);
+  }, 0.0);
   return +total.toFixed(2);
+};
+
+export const creditDebitTransfer = (total, transfers) => {
+  const CATEGORY = "Transfer";
+  const all = +total.toFixed(2);
+
+  const transformTransfer = transfers.map((transfer) => {
+    const { date, amount, description } = transfer;
+    return { date, amount, category: CATEGORY, description };
+  });
+
+  return { all, transformTransfer };
 };

@@ -1,39 +1,52 @@
 import { ERROR_SERVER } from "../config/config.js";
-import { findAccount, findCategories, findTypeTransfer } from "../helpers/consults.js";
 import { dateFormat } from "../helpers/utils.js";
 import ExpenseIncome from "../database/models/expenseIncome.js";
+import Account from "../database/models/account.js";
+import TypeTransfer from "../database/models/typeTransfer.js";
+import Categories from "../database/models/categories.js";
+import TypeMoney from "../database/models/typeMoney.js";
 
 export const getAllReports = async (req, res) => {
   const where = req.where;
+  const { idUser } = req.user;
+
   try {
     const query = await ExpenseIncome.findAll({
-      where: where,
-      attributes: [
-        "dateReport",
-        "amount",
-        "description",
-        "idTypeTransfer",
-        "idCategory",
-        "idAccount",
+      attributes: ["dateReport", "amount", "description"],
+      where,
+      include: [
+        { model: Account, as: "AccountReported", where: { idUser }, include: { model: TypeMoney } },
+        { model: TypeTransfer, as: "Type" },
+        { model: Categories, as: "Category" },
       ],
     });
 
     if (!query.length) {
-      return res.status(404).json({ message: "No reports on the requested date" });
+      return res.status(404).json({ message: "No reports" });
     }
 
-    const reports = query.map(async (row) => {
-      const { dateReport, amount, description, idCategory, idTypeTransfer, idAccount } =
-        row.dataValues;
+    const reports = query.map((row) => {
+      const { dateReport, amount, description, AccountReported, Type, Category } = row.dataValues;
+      const { bankName, numberAccount, TypeMoney } = AccountReported;
+      const symbol = TypeMoney.name;
       const date = dateFormat(dateReport);
-      const amountFixed = +amount.toFixed(2);
-      const category = await findCategories(idCategory);
-      const report = await findTypeTransfer(idTypeTransfer);
-      const { bankName, numberAccount } = await findAccount(idAccount);
-      return { bankName, numberAccount, date, amount: amountFixed, category, report, description };
+      const amountFixed = amount.toFixed(2);
+      const category = Category.name;
+      const report = Type.name;
+
+      return {
+        bankName,
+        numberAccount,
+        date,
+        amount: amountFixed,
+        category,
+        report,
+        description,
+        symbol,
+      };
     });
-    const promise = await Promise.all(reports);
-    res.status(200).json(promise);
+
+    res.status(200).json(reports);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: ERROR_SERVER });

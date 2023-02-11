@@ -8,7 +8,6 @@ export const login = async (req, res) => {
   try {
     //check if the user exists by email
     const isRegistered = await User.findOne({ where: { email } });
-
     if (!isRegistered) {
       return res.status(400).json({
         message: "Email wrong",
@@ -35,7 +34,8 @@ export const login = async (req, res) => {
 
     res.status(202).json({ idUser, name, email, password, token });
   } catch (error) {
-    return res.status(500).json({
+    console.log(error);
+    res.status(500).json({
       message: ERROR_SERVER,
     });
   }

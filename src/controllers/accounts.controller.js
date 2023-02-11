@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
-import { ERROR_SERVER, EXPENSIVE_SELECTED, INCOME_SELECTED, CATEGORY } from "../config/config.js";
+import { ERROR_SERVER, EXPENSIVE_SELECTED, INCOME_SELECTED } from "../config/config.js";
 import { formatResponseAccount } from "../helpers/accounting.js";
-import { nameCapitalize, dateFormat, total } from "../helpers/utils.js";
+import { nameCapitalize, dateFormat, total, creditDebitTransfer } from "../helpers/utils.js";
 import {
   findExpenseIncome,
   findMadeTransfers,
@@ -84,7 +84,6 @@ export const getAllAccountsById = async (req, res) => {
 
 export const getAccountById = async (req, res) => {
   const { idAccount } = req.params;
-
   try {
     const [expensive, incomes, transferReceived, madeTransfers] = await Promise.all([
       findExpenseIncome(idAccount, EXPENSIVE_SELECTED),
@@ -96,18 +95,15 @@ export const getAccountById = async (req, res) => {
     const totalExpensive = total([...expensive, ...madeTransfers]);
     const totalIncomes = total([...incomes, ...transferReceived]);
 
-    const debitTransfers = madeTransfers.map((transfer) => {
-      const { date, amount, description } = transfer;
-      return { date, amount, category: CATEGORY, description };
-    });
+    const { all: allExpensive, transformTransfer: debitTransfers } = creditDebitTransfer(
+      totalExpensive,
+      madeTransfers
+    );
 
-    const creditsTransfers = transferReceived.map((transfer) => {
-      const { date, amount, description } = transfer;
-      return { date, amount, category: CATEGORY, description };
-    });
-
-    const allIncomes = +totalIncomes.toFixed(2);
-    const allExpensive = +totalExpensive.toFixed(2);
+    const { all: allIncomes, transformTransfer: creditsTransfers } = creditDebitTransfer(
+      totalIncomes,
+      transferReceived
+    );
 
     const debits = [...expensive, ...debitTransfers];
 

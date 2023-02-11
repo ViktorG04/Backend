@@ -18,7 +18,6 @@ class DATABASE {
   async connect() {
     try {
       await this.sequelize.authenticate();
-      //await this.sequelize.sync({ force: true });
       console.log("DB IS RUNNING");
     } catch (error) {
       console.error(error);

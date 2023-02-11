@@ -1,5 +1,4 @@
 import { DataTypes } from "sequelize";
-import { DB_SCHEMA } from "../../config/config.js";
 import database from "../connection.js";
 
 const TypeTransfer = database.get().define(
@@ -16,7 +15,6 @@ const TypeTransfer = database.get().define(
     },
   },
   {
-    schema: DB_SCHEMA,
     timestamps: false,
   }
 );
