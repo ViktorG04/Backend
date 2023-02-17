@@ -1,12 +1,9 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { validateIdAccount } from "../helpers/dbValidator.js";
+import { createTransfer, getTransfers } from "../controllers/transfers.controller.js";
 import validationParams from "../middlewares/validateParams.js";
 import validateJWT from "../middlewares/validate-jwt.js";
-import {
-  createTransfer,
-  getTransfers,
-} from "../controllers/transfers.controller.js";
 
 const router = Router();
 

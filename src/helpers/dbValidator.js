@@ -40,7 +40,7 @@ export const validateIdCategory = async (idCategory = "") => {
 export const validateIdAccount = async (idAccount = "") => {
   const isAccount = await Account.findByPk(idAccount);
   if (!isAccount) {
-    throw new Error(`IdAccount is invalid`);
+    throw new Error(`idAccount is invalid`);
   }
 };
 

@@ -17,11 +17,12 @@ ENV DB_PORT=
 ENV JWT_KEY=
 ENV KEY_FIXER=
 ENV API_FIXER=
-# APP Copy
-COPY . /opt/app
 
 # Cambiar de directorio
-WORKDIR /opt/app
+WORKDIR /app
+
+# APP Copy
+COPY . /app
 
 # Dependencias
 RUN npm install

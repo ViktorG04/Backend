@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { PORT } from "./config/config.js";
 import loginRouter from "./routes/auth.router.js";
 import userRouters from "./routes/users.router.js";
 import accountRoutes from "./routes/accounts.router.js";
@@ -9,6 +8,8 @@ import categoryRoutes from "./routes/categories.router.js";
 import exchangeRoutes from "./routes/exchanges.router.js";
 import expenseIncomeRoutes from "./routes/expenseIncome.router.js";
 import reportsRoutes from "./routes/reports.router.js";
+import { PORT } from "./config/config.js";
+
 const app = express();
 
 //settings

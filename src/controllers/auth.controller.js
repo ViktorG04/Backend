@@ -15,7 +15,7 @@ export const login = async (req, res) => {
     }
     // check if the user is active
     if (!isRegistered.state) {
-      return res.state(400).json({
+      return res.status(400).json({
         message: "User disabled",
       });
     }

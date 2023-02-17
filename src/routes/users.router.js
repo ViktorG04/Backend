@@ -1,7 +1,11 @@
 import { Router } from "express";
-import { check, body } from "express-validator";
-import { emailIsRegister, validateIdUser } from "../helpers/dbValidator.js";
-import { createNewUser, updateUserById } from "../controllers/users.controller.js";
+import { body } from "express-validator";
+import { emailIsRegister } from "../helpers/dbValidator.js";
+import {
+  createNewUser,
+  updateUserById,
+  disabledUserById,
+} from "../controllers/users.controller.js";
 import validateJWT from "../middlewares/validate-jwt.js";
 import validationParams from "../middlewares/validateParams.js";
 
@@ -20,14 +24,11 @@ router.post(
 );
 
 router.put(
-  "/user/:id",
-  [
-    validateJWT,
-    check("id").custom(validateIdUser),
-    body("newPassword", "min length 8").isLength({ min: 8 }),
-    validationParams,
-  ],
+  "/user",
+  [validateJWT, body("newPassword", "min length 8").isLength({ min: 8 }), validationParams],
   updateUserById
 );
+
+router.put("/user/disabled", validateJWT, disabledUserById);
 
 export default router;

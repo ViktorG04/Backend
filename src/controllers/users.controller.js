@@ -19,12 +19,25 @@ export const createNewUser = async (req, res) => {
 };
 
 export const updateUserById = async (req, res) => {
-  const { id: idUser } = req.params;
+  const { idUser } = req.user;
   const { newPassword } = req.body;
   try {
     const encrypted = passwordEncrypt(newPassword);
     await User.update({ password: encrypted }, { where: { idUser } });
     res.status(202).json({ message: "password updated!", newPassword });
+  } catch (error) {
+    res.status(500).json({
+      message: ERROR_SERVER,
+    });
+  }
+};
+
+export const disabledUserById = async (req, res) => {
+  const { idUser } = req.user;
+  const STATE = false;
+  try {
+    await User.update({ state: STATE }, { where: { idUser } });
+    res.status(202).json({ message: "User disabled" });
   } catch (error) {
     res.status(500).json({
       message: ERROR_SERVER,

@@ -119,8 +119,8 @@ export const getAccountById = async (req, res) => {
 };
 
 export const createAccount = async (req, res) => {
-  const { bankName, credit, dateExpiration, idTypeMoney, idUser, numberAccount } = req.body;
-
+  const { bankName, credit, dateExpiration, idTypeMoney, numberAccount } = req.body;
+  const { idUser } = req.user;
   const formatName = nameCapitalize(bankName);
   const money = parseFloat(credit);
 
@@ -135,6 +135,7 @@ export const createAccount = async (req, res) => {
     idUser,
     state: true,
   };
+
   try {
     const query = await Account.build(data).save();
     const account = await formatResponseAccount(query.dataValues);

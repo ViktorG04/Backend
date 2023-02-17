@@ -28,7 +28,7 @@ export const Accounting = async (idAccount, amount, origin) => {
   let availableFloat = parseFloat(available);
   let expensiveFloat = parseFloat(expensive);
 
-  //3 - validate the credit available  of the selected account
+  //3 - validate the selected account if credit is available
   if (amountFloat > availableFloat && origin) {
     throw `insufficient credit to transfer, available: ${available}`;
   }

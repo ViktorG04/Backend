@@ -1,14 +1,13 @@
 import { Router } from "express";
 import { body } from "express-validator";
-
-import { validateIdAccount } from "../helpers/dbValidator.js";
-import validationParams from "../middlewares/validateParams.js";
-import validateJWT from "../middlewares/validate-jwt.js";
 import {
   getExchangeCurrency,
   getExchanges,
   getTypeMoney,
 } from "../controllers/exchange.controller.js";
+import validationParams from "../middlewares/validateParams.js";
+import validateJWT from "../middlewares/validate-jwt.js";
+
 const router = Router();
 
 router.get("/money", validateJWT, getTypeMoney);
